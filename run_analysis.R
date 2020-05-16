@@ -1,3 +1,4 @@
+## PART 1 ##
 Url<-"https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip"
 download.file("Url", destfile = "./data/Dataset.zip")
 
@@ -8,8 +9,8 @@ pathdata = file.path("./data", "UCI HAR Dataset")
 #create a file which has the 28 file names
 files = list.files(pathdata, recursive=TRUE)
 
-
-### 1. Output Steps - Here we begin how to create the data set of training and test
+## PArt 2 ##
+## Output Steps - Here we begin how to create the data set of training and test
 #Reading training tables - xtrain / ytrain, subject train
 xtrain = read.table(file.path(pathdata, "train", "X_train.txt"),header = FALSE)
 ytrain = read.table(file.path(pathdata, "train", "y_train.txt"),header = FALSE)
@@ -23,7 +24,7 @@ features = read.table(file.path(pathdata, "features.txt"),header = FALSE)
 #Read activity labels data
 activityLabels = read.table(file.path(pathdata, "activity_labels.txt"),header = FALSE)
 
-
+## PART 3 ##
 #Create Sanity and Column Values to the Train Data
 colnames(xtrain) = features[,2]
 colnames(ytrain) = "activityId"
@@ -35,14 +36,14 @@ colnames(subject_test) = "subjectId"
 #Create sanity check for the activity labels value
 colnames(activityLabels) <- c('activityId','activityType')
 
-
+## PART 4 ##
 #Merging the train and test data - important outcome of the project
 mrg_train = cbind(ytrain, subject_train, xtrain)
 mrg_test = cbind(ytest, subject_test, xtest)
 #Create the main data table merging both table tables - this is the outcome of 1
 setAllInOne = rbind(mrg_train, mrg_test)
 
-
+## PART 5 ##
 # Need step is to read all the values that are available
 colNames = colnames(setAllInOne)
 #Need to get a subset of all the mean and standards and the correspondongin activityID and subjectID 
@@ -50,12 +51,13 @@ mean_and_std = (grepl("activityId" , colNames) | grepl("subjectId" , colNames) |
 #A subtset has to be created to get the required dataset
 setForMeanAndStd <- setAllInOne[ , mean_and_std == TRUE]
 
-
+## PART 6 ##
 setWithActivityNames = merge(setForMeanAndStd, activityLabels, by='activityId', all.x=TRUE)
 
 
-
+## PART 7 ##
 secTidySet <- aggregate(. ~subjectId + activityId, setWithActivityNames, mean)
 secTidySet <- secTidySet[order(secTidySet$subjectId, secTidySet$activityId),]
 
+## PART 8 ##
 write.table(secTidySet, "secTidySet.txt", row.name=FALSE)
